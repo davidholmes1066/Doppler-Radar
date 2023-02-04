@@ -2,12 +2,24 @@
 #include <avr/interrupt.h>
 #include <math.h>
 #include "avr_complex.h"
+#include "avr_fft.h"
 #include "start.h"
 #include "handle.h"
 
-ISR(TCE0_OVF_vect)
+
+
+complexfloat *FFT_Array;														//Global pointer to FFT_Array memory block
+complexfloat *W;																//Global pointer to twiddle factor lookup memory block
+uint16_t *Reverse_Lookup;														//Global pointer to Bit reversal lookup memory block
+float *Window;																	//Global pointer to Window lookup memory block
+uint16_t count = 0;																//keeps track of samples taken
+
+
+
+ISR(TCE0_OVF_vect)																//When TC overflows (5kHz)
 {
-	//Do something
+	read_ADC(FFT_Array, Reverse_Lookup, count);									//Gets IQ samples and decimates in time
+	count++;																	//Add sample count by one
 }
 
 
@@ -24,9 +36,24 @@ int main(void)
 	sei();																		//Global interrupt mask
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;												//Set low level interrupts
 	
+	complexfloat *FFT_Array = init_avr_fft();									//Creates data block in heap for FFT in place computation
+	complexfloat *W = init_avr_Wlookup();										//Creates heap lookup table for twiddle factors
+	uint16_t *Reverse_Lookup = init_BRLookup();									//Creates heap lookup table for bit reverse order (decimation order)
+	float *Window = init_Window();												//Creates heap lookup table for the Window function
+	
+	start_timer();																//Starts timer for sampling @ 5kHz										
+	
 	while(1)
 	{
-		
+		if(count == (N-1))
+		{
+			stop_timer();														//Stop sampling and reset TC.CNT
+			apply_avr_Window(FFT_Array, Window, Reverse_Lookup);				//Apply Blackman-Harris window
+			calc_avr_FFT(FFT_Array, W);											//Calculates Radix2-FFT in pace
+			//Calc_speed(FFT_Array, Sample_Rate);								//Calculates Speed based of FFT
+			//WriteF_uart(speed);												//Writes speed trough UART
+			count = 0;															//Reset sample count
+		}
 	}
 }
 

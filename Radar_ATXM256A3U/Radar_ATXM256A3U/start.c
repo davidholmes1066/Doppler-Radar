@@ -29,8 +29,7 @@ void init_TIMER(void)
 	TCE0.CTRLB = TC_WGMODE_NORMAL_gc;									//Set timer E0 to normal mode
 	TCE0.CTRLA = TC_CLKSEL_OFF_gc;										//Timer is off until clksel is changed
 	TCE0.INTCTRLA = TC_OVFINTLVL_LO_gc;									//Set overflow interrupt TCE0 to low level
-	TCE0.PERL = 0xFF;
-	TCE0.PERH = 0xFF;													//t = N*(PER + 1)/F_CPU = 0.25
+	TCE0.PER = 0x19;													//Set overflow frequency to 5kHz = ((F_CPU/256)/(PER))
 }
 
 void init_IO(void)
@@ -39,6 +38,9 @@ void init_IO(void)
 	PORTA_OUTSET = PIN7_bm;												//Enable I'm alive LED
 	
 	PORTE_DIRSET = PIN4_bm;												//Timing debug pin
+	
+	PORTA_DIRSET = PIN1_bm;												//Radar /enable pin
+	PORTA_OUTCLR = PIN1_bm;												//Enable radar
 }
 
 void init_ADC(void)
