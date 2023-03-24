@@ -6,6 +6,8 @@ avr_complex.c
 
 avr_fft.c
 
+DSP.c
+
 handle.c
 
 main.c

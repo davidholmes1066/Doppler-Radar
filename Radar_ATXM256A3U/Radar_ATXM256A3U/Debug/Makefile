@@ -39,6 +39,7 @@ SUBDIRS :=
 C_SRCS +=  \
 ../avr_complex.c \
 ../avr_fft.c \
+../DSP.c \
 ../handle.c \
 ../main.c \
 ../start.c
@@ -53,6 +54,7 @@ ASM_SRCS +=
 OBJS +=  \
 avr_complex.o \
 avr_fft.o \
+DSP.o \
 handle.o \
 main.o \
 start.o
@@ -60,6 +62,7 @@ start.o
 OBJS_AS_ARGS +=  \
 avr_complex.o \
 avr_fft.o \
+DSP.o \
 handle.o \
 main.o \
 start.o
@@ -67,6 +70,7 @@ start.o
 C_DEPS +=  \
 avr_complex.d \
 avr_fft.d \
+DSP.d \
 handle.d \
 main.d \
 start.d
@@ -74,6 +78,7 @@ start.d
 C_DEPS_AS_ARGS +=  \
 avr_complex.d \
 avr_fft.d \
+DSP.d \
 handle.d \
 main.d \
 start.d
@@ -100,6 +105,13 @@ LINKER_SCRIPT_DEP+=
 	
 
 ./avr_fft.o: .././avr_fft.c
+	@echo Building file: $<
+	@echo Invoking: AVR/GNU C Compiler : 5.4.0
+	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\include"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atxmega256a3u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\gcc\dev\atxmega256a3u" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Finished building: $<
+	
+
+./DSP.o: .././DSP.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 5.4.0
 	$(QUOTE)C:\Program Files (x86)\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\include"  -Og -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -g2 -Wall -mmcu=atxmega256a3u -B "C:\Program Files (x86)\Atmel\Studio\7.0\Packs\atmel\XMEGAA_DFP\1.3.146\gcc\dev\atxmega256a3u" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

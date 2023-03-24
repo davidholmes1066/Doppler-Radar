@@ -5,6 +5,7 @@
 #include "avr_fft.h"
 #include "start.h"
 #include "handle.h"
+#include "DSP.h"
 
 
 
@@ -45,14 +46,14 @@ int main(void)
 	
 	while(1)
 	{
-		if(count == (N-1))
+		if(count == (N-1))														//When the FFT array is full of samples perform calculations
 		{
 			stop_timer();														//Stop sampling and reset TC.CNT
 			apply_avr_Window(FFT_Array, Window, Reverse_Lookup);				//Apply Blackman-Harris window
 			calc_avr_FFT(FFT_Array, W);											//Calculates Radix2-FFT in pace
-			//Calc_speed(FFT_Array, Sample_Rate);								//Calculates Speed based of FFT
-			//WriteF_uart(speed);												//Writes speed trough UART
+			DebugPrint_spectrum(FFT_Array, N);									//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
 			count = 0;															//Reset sample count
+			start_timer();														//Restart timer to collect new samples
 		}
 	}
 }

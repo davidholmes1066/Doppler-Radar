@@ -2,7 +2,7 @@
 
 
 
-uint16_t avr_log2(uint16_t input)										//quick solution to math.h in avrgcc not having a log2()....
+uint16_t avr_log2(uint16_t input)										//quick dirty solution to math.h in avrgcc not having a log2()....
 {
 	uint16_t i = 0;
 	uint16_t res = 1;
