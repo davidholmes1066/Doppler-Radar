@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include "avr_complex.h"
 
-#define N 128
+#define N 16
 #define L avr_log2(N)
 
 #define A0 0.35875                                                                          //Factors Blackman-Harris window
