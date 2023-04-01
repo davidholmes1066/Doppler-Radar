@@ -17,7 +17,7 @@ uint16_t count = 0;																//keeps track of samples taken
 
 
 
-ISR(TCE0_OVF_vect)																//When TC overflows (5kHz)
+ISR(TCE0_OVF_vect)																//When TC overflows (@ 5kHz interval)
 {
 	read_ADC(FFT_Array, Reverse_Lookup, count);									//Gets IQ samples and decimates in time
 	count++;																	//Add sample count by one
@@ -37,10 +37,10 @@ int main(void)
 	sei();																		//Global interrupt mask
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;												//Set low level interrupts
 	
-	complexfloat *FFT_Array = init_avr_fft();									//Creates data block in heap for FFT in place computation
-	complexfloat *W = init_avr_Wlookup();										//Creates heap lookup table for twiddle factors
-	uint16_t *Reverse_Lookup = init_BRLookup();									//Creates heap lookup table for bit reverse order (decimation order)
-	float *Window = init_Window();												//Creates heap lookup table for the Window function
+	FFT_Array = init_avr_fft();													//Creates data block in heap for FFT in place computation
+	W = init_avr_Wlookup();														//Creates heap lookup table for twiddle factors
+	Reverse_Lookup = init_BRLookup();											//Creates heap lookup table for bit reverse order (decimation order)
+	Window = init_Window();														//Creates heap lookup table for the Window function
 	
 	start_timer();																//Starts timer for sampling @ 5kHz										
 	
