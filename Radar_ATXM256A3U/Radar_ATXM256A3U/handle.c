@@ -64,20 +64,35 @@ void writeF_UART(float data)
 
 void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
 {
+	uint16_t TestVal_I;																				//Temp variable for storing I channel ADC data
+	uint16_t TestVal_Q;																				//Temp variable for storing Q channel ADC data=
+
 	ADCA.CTRLA = ADC_ENABLE_bm;																		//Enables ADCA
 	ADCB.CTRLA = ADC_ENABLE_bm;																		//Enables ADCB
 	
 	ADCA.CTRLA |= (0x01 << 2);							 											//Start ADCA conversion CH0
 	ADCB.CTRLA |= (0x01 << 2);																		//Start ADCB conversion CH0
 	
-	while( (((ADCA.INTFLAGS & (0x01)) != (0xF)) && ((ADCB.INTFLAGS & (0x0F)) != (0x1))))			//Poll ADC IF
+	while( (((ADCA.INTFLAGS & (0x01)) != (0x1)) && ((ADCB.INTFLAGS & (0x01)) != (0x1))))			//Poll ADC IF
 	{
 		//Wait for conversion
 	}
+
+	TestVal_I = ((uint16_t)ADCA.CH0.RES);															//Read I sample and store to temp variable
+	TestVal_Q = ((uint16_t)ADCB.CH0.RES);															//Read Q sample and store to temp variable
 	
-	FFT_Array[Lookup_Reverse[i]].re = ((float)ADCA.CH0.RES);										//Save I[i] sample to BR location in FFT_Array
-	FFT_Array[Lookup_Reverse[i]].im = ((float)ADCB.CH0.RES);										//Save Q[i] sample to BR location in FFT_Array
+	write16_UART(TestVal_I);																		//Debug write raw ADC value
+	write16_UART(TestVal_Q);																		//Debug write raw ADC value
+	
+	FFT_Array[Lookup_Reverse[i]].re = ((float)TestVal_I);											//Save I[i] sample to BR location in FFT_Array
+	FFT_Array[Lookup_Reverse[i]].im = ((float)TestVal_Q);											//Save Q[i] sample to BR location in FFT_Array
 	
 	ADCA.CTRLA &= (0xFE);																			//Disable ADCA
 	ADCB.CTRLA &= (0xFE);																			//Disable ADCB
+}
+
+void write16_UART(uint16_t data)																	//Writes 16bit UINT to MATLAB
+{
+	write8_UART((uint8_t)data);																		//Send low byte
+	write8_UART((uint8_t)(data>>8));																//Send  high byte	
 }
