@@ -57,9 +57,13 @@ void writeF_UART(float data)
 {
 	uint8_t *sendarray = (uint8_t*)(&data);															//converts float to 4 separate bytes in send array
 	write8_UART(sendarray[0]);																		//Sends separate bytes (LF)
+	not_correct_delay();
 	write8_UART(sendarray[1]);
+	not_correct_delay();
 	write8_UART(sendarray[2]);
+	not_correct_delay();
 	write8_UART(sendarray[3]);
+	not_correct_delay();
 }
 
 void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
@@ -70,7 +74,7 @@ void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
 	ADCA.CTRLA |= (0x01 << 2);							 											//Start ADCA conversion CH0
 	ADCB.CTRLA |= (0x01 << 2);																		//Start ADCB conversion CH0
 	
-	while( (((ADCA.INTFLAGS & (0x01)) != (0xF)) && ((ADCB.INTFLAGS & (0x0F)) != (0x1))))			//Poll ADC IF
+	while( (((ADCA.INTFLAGS & (0x01)) != (0x1)) && ((ADCB.INTFLAGS & (0x01)) != (0x1))))			//Poll ADC IF
 	{
 		//Wait for conversion
 	}
@@ -80,4 +84,15 @@ void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
 	
 	ADCA.CTRLA &= (0xFE);																			//Disable ADCA
 	ADCB.CTRLA &= (0xFE);																			//Disable ADCB
+	
+	writeF_UART(FFT_Array[Lookup_Reverse[i]].re);
+	writeF_UART(FFT_Array[Lookup_Reverse[i]].im);
+}
+
+void not_correct_delay(void)
+{
+	for(uint16_t i = 0; i < 250; i++)
+	{
+		//do nothing
+	}
 }

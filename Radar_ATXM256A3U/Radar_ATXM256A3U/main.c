@@ -42,18 +42,41 @@ int main(void)
 	Reverse_Lookup = init_BRLookup();											//Creates heap lookup table for bit reverse order (decimation order)
 	Window = init_Window();														//Creates heap lookup table for the Window function
 	
-	start_timer();																//Starts timer for sampling @ 5kHz										
+	uint8_t ReadyFInstruction = 1;												//If true ATXmega is ready to receive instruction, if not its busy taking measurements
+	uint8_t Instruction = 0;													//Variable for storing instructions read from UART
+	
 	
 	while(1)
 	{
+
+		if(ReadyFInstruction == 1)
+		{
+			Instruction = read8_UART();
+			
+			switch (Instruction)
+			{
+				case 1:
+					ReadyFInstruction = 0;										//Set status to busy
+					Instruction = 0;											//Reset instruction
+					start_timer();												//start taking samples
+					break;
+					
+				default:
+					ReadyFInstruction = 1;										//In case of error; take new Instruction
+					Instruction = 0;											//Reset Instruction	
+					break;
+			}
+		}
+		
+		
 		if(count == (N-1))														//When the FFT array is full of samples perform calculations
 		{
 			stop_timer();														//Stop sampling and reset TC.CNT
-			apply_avr_Window(FFT_Array, Window, Reverse_Lookup);				//Apply Blackman-Harris window
-			calc_avr_FFT(FFT_Array, W);											//Calculates Radix2-FFT in pace
-			DebugPrint_spectrum(FFT_Array, N);									//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
+//			apply_avr_Window(FFT_Array, Window, Reverse_Lookup);				//Apply Blackman-Harris window
+//			calc_avr_FFT(FFT_Array, W);											//Calculates Radix2-FFT in pace
+//			DebugPrint_spectrum(FFT_Array, N);									//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
 			count = 0;															//Reset sample count
-			start_timer();														//Restart timer to collect new samples
+			ReadyFInstruction = 1;												//Set ATXmega status to available to receive commands
 		}
 	}
 }

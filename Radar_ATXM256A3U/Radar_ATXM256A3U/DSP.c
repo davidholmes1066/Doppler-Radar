@@ -9,6 +9,6 @@ void DebugPrint_spectrum(complexfloat* FFT_Array, uint16_t FBins)										//Cal
 	for(uint16_t i = 0; i < FBins; i++)
 	{
 		v_lenth = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate vector magnitude frequency bin i
-		writeF_UART(v_lenth);																			//Write the float in 8bit sections through the UART --> USB2.0	
+//		writeF_UART(v_lenth);																			//Write |vector| to UART interface
 	}
 }
