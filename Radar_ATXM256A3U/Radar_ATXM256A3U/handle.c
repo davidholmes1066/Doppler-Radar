@@ -68,30 +68,46 @@ void writeF_UART(float data)
 
 void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
 {
+	float ADC_I;																					//Test variables
+	float ADC_R;
+	
+	uint8_t IR_F_A;
+	uint8_t IR_F_B;
+	
 	ADCA.CTRLA = ADC_ENABLE_bm;																		//Enables ADCA
 	ADCB.CTRLA = ADC_ENABLE_bm;																		//Enables ADCB
 	
 	ADCA.CTRLA |= (0x01 << 2);							 											//Start ADCA conversion CH0
 	ADCB.CTRLA |= (0x01 << 2);																		//Start ADCB conversion CH0
 	
-	while( (((ADCA.INTFLAGS & (0x01)) != (0x1)) && ((ADCB.INTFLAGS & (0x01)) != (0x1))))			//Poll ADC IF
+	IR_F_A = (ADCA.INTFLAGS & (0x01));																//Debugging IR flags
+	IR_F_B = (ADCB.INTFLAGS & (0x01));
+
+	while((IR_F_A != (0x1)) && (IR_F_B != (0x1)))													//Poll ADC IF
 	{
-		//Wait for conversion
+		IR_F_A = (ADCA.INTFLAGS & (0x01));															//Debugging variable for polling IR flags
+		IR_F_B = (ADCB.INTFLAGS & (0x01));	
 	}
-	
-	FFT_Array[Lookup_Reverse[i]].re = ((float)ADCA.CH0.RES);										//Save I[i] sample to BR location in FFT_Array
-	FFT_Array[Lookup_Reverse[i]].im = ((float)ADCB.CH0.RES);										//Save Q[i] sample to BR location in FFT_Array
+
+	ADC_R = ((float)ADCA.CH0.RES);																	//Collect ADC value and store in Variable
+	ADC_I = ((float)ADCB.CH0.RES);
+
+	FFT_Array[Lookup_Reverse[i]].re = (ADC_R);														//Save I[i] sample to BR location in FFT_Array
+	FFT_Array[Lookup_Reverse[i]].im = (ADC_I);														//Save Q[i] sample to BR location in FFT_Array
+
+	ADCA.INTFLAGS |= (0x01);																		//Reset interrupt flags ADCA
+	ADCB.INTFLAGS |= (0x01);																		//Reset interrupt flags ADCB
 	
 	ADCA.CTRLA &= (0xFE);																			//Disable ADCA
 	ADCB.CTRLA &= (0xFE);																			//Disable ADCB
 	
-	writeF_UART(FFT_Array[Lookup_Reverse[i]].re);
-	writeF_UART(FFT_Array[Lookup_Reverse[i]].im);
+//	writeF_UART(ADC_R);																				//Testing: Debug print samples as float
+//	writeF_UART(ADC_I);
 }
 
 void not_correct_delay(void)
 {
-	for(uint16_t i = 0; i < 250; i++)
+	for(uint16_t i = 0; i < 25; i++)
 	{
 		//do nothing
 	}
