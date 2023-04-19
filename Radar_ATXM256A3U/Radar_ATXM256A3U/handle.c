@@ -66,7 +66,7 @@ void writeF_UART(float data)
 	not_correct_delay();
 }
 
-void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
+void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i, float R_Offset, float I_Offset)
 {
 	float ADC_I;																					//Test variables
 	float ADC_R;
@@ -89,8 +89,8 @@ void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i)
 		IR_F_B = (ADCB.INTFLAGS & (0x01));	
 	}
 
-	ADC_R = ((float)ADCA.CH0.RES);																	//Collect ADC value and store in Variable
-	ADC_I = ((float)ADCB.CH0.RES);
+	ADC_R = ((float)ADCA.CH0.RES) - R_Offset;														//Collect ADC value and store in Variable
+	ADC_I = ((float)ADCB.CH0.RES) - I_Offset;
 
 	FFT_Array[Lookup_Reverse[i]].re = (ADC_R);														//Save I[i] sample to BR location in FFT_Array
 	FFT_Array[Lookup_Reverse[i]].im = (ADC_I);														//Save Q[i] sample to BR location in FFT_Array

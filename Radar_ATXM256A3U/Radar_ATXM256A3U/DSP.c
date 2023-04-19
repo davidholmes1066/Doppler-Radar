@@ -12,3 +12,34 @@ void DebugPrint_spectrum(complexfloat* FFT_Array, uint16_t FBins)										//Cal
 		writeF_UART(v_lenth);																			//Write |vector| to UART interface
 	}
 }
+
+float Cal_R_OFFSET(complexfloat *FFT_Array)
+{
+	float Offset = 0;																					//Temporary variable for storing Offset
+	
+	for(uint16_t i = 0; i < N; i++)
+	{
+		Offset += FFT_Array[i].re;																		//Get the sum off complete offset
+	}
+	
+	Offset /= N;																						//Find average DC offset
+
+	return Offset;																						//Return ADC DC offset
+}
+
+
+
+float Cal_I_OFFSET(complexfloat *FFT_Array)
+{
+	float Offset = 0;																					//Temporary variable for storing Offset
+	
+	for(uint16_t i = 0; i < N; i++)
+	{
+		Offset += FFT_Array[i].im;																		//Get the sum off complete offset
+	}
+	
+	Offset /= N;																						//Find average DC offset
+
+	return Offset;																						//Return ADC DC offset
+}
+

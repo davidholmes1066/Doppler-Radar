@@ -17,25 +17,17 @@ uint16_t count = 0;																//keeps track of samples taken
 
 uint8_t ReadyFInstruction = 1;													//If true ATXmega is ready to receive instruction, if not its busy taking measurements
 uint8_t Instruction = 0;														//Variable for storing instructions read from UART
+uint8_t CalState = 0;															//Calibration state 1 = true
+
+float R_Offset = 3500;															//Real channel ADC offset
+float I_Offset = 3500;															//Imag channel ADC offset
 
 
 
 ISR(TCE0_OVF_vect)																//When TC overflows (@ 5kHz interval)
 {
-	read_ADC(FFT_Array, Reverse_Lookup, count);									//Gets IQ samples and decimates in time
+	read_ADC(FFT_Array, Reverse_Lookup, count, R_Offset, I_Offset);				//Gets IQ samples and decimates in time
 	count++;																	//Add sample count by one
-
-	if(count == N)
-	{
-		stop_timer();															//Stop sampling
-		apply_avr_Window(FFT_Array, Window, Reverse_Lookup);					//Apply Blackman-Harris window
-		calc_avr_FFT(FFT_Array, W);												//Calculates Radix2-FFT in pace
-		DebugPrint_spectrum(FFT_Array, N);										//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
-		
-		count = 0;																//Reset count
-		ReadyFInstruction = 1;													//Get ready for new instruction
-		writeF_UART(0.12345);
-	}
 }
 
 
@@ -59,7 +51,6 @@ int main(void)
 	
 	
 	
-	
 	while(1)
 	{
 
@@ -69,7 +60,14 @@ int main(void)
 			
 			switch (Instruction)
 			{
-				case 1:
+				case 1:															//Calibration
+					ReadyFInstruction = 0;										//Set status to busy
+					Instruction = 0;											//Reset instruction
+					CalState = 1;												//Set device to cal state
+					start_timer();												//Start taking samples
+					break;
+				
+				case 2:															//Find speed
 					ReadyFInstruction = 0;										//Set status to busy
 					Instruction = 0;											//Reset instruction
 					start_timer();												//start taking samples
@@ -83,15 +81,30 @@ int main(void)
 		}
 		
 		
-//		if(count == (N-1))														//When the FFT array is full of samples perform calculations
-//		{
-//			stop_timer();														//Stop sampling and reset TC.CNT
-//			apply_avr_Window(FFT_Array, Window, Reverse_Lookup);				//Apply Blackman-Harris window
-//			calc_avr_FFT(FFT_Array, W);											//Calculates Radix2-FFT in pace
-//			DebugPrint_spectrum(FFT_Array, N);									//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
-//			count = 0;															//Reset sample count
-//			ReadyFInstruction = 1;												//Set ATXmega status to available to receive commands
-//		}
+		if(count == N)															//When the FFT array is full of samples perform calculations
+		{
+			
+			if(CalState == 1)													//Is calibration state active?
+			{
+				stop_timer();													//Stop sampling
+				R_Offset = Cal_R_OFFSET(FFT_Array);								//Find average offset real channel
+				I_Offset = Cal_I_OFFSET(FFT_Array);								//Find average offset imag channel
+				CalState = 0;													//Clear Cal state
+				writeF_UART(0.12345);											//Write checksum to MATLAB
+			}
+
+			else
+			{
+				stop_timer();													//Stop sampling
+				apply_avr_Window(FFT_Array, Window, Reverse_Lookup);			//Apply Blackman-Harris window
+				calc_avr_FFT(FFT_Array, W);										//Calculates Radix2-FFT in pace
+				DebugPrint_spectrum(FFT_Array, N);								//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
+		
+				count = 0;														//Reset count
+				ReadyFInstruction = 1;											//Get ready for new instruction
+				writeF_UART(0.12345);											//Write checksum to MATLAB
+			}
+		}
 	}
 }
 
