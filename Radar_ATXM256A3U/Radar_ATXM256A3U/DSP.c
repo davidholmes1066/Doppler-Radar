@@ -2,44 +2,35 @@
 #include "handle.h"
 
 
-void DebugPrint_spectrum(complexfloat* FFT_Array, uint16_t FBins)										//Calculates vector lengths and prints the floats
+void DebugPrint_spectrum(complexfloat* FFT_Array, uint16_t FBins)														//Calculates vector lengths and prints the floats
 {
-	float v_lenth;																						//Temp storage for vector magnitude
+	float v_lenth;																										//Temp storage for vector magnitude
 
 	for(uint16_t i = 0; i < FBins; i++)
 	{
-		v_lenth = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate vector magnitude frequency bin i
-		writeF_UART(v_lenth);																			//Write |vector| to UART interface
+		v_lenth = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));						//Calculate vector magnitude frequency bin i
+		writeF_UART(v_lenth);																							//Write |vector| to UART interface
 	}
 }
 
-float Cal_R_OFFSET(complexfloat *FFT_Array)
+
+void Compute_ABS_spectrum(complexfloat *FFT_Array, float *DSP_Array)
 {
-	float Offset = 0;																					//Temporary variable for storing Offset
+	uint16_t MinSample = N/2;																							//Sample of most negative frequency bin
 	
+	for(uint16_t i = MinSample; i < N; i++)
+	{
+		DSP_Array[i-MinSample] = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate negative frequency vector length
+	}
+
+	for(uint16_t i = 0; i < MinSample; i++)
+	{
+		DSP_Array[i+MinSample] = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate positive frequency vector length 
+	}
+
 	for(uint16_t i = 0; i < N; i++)
 	{
-		Offset += FFT_Array[i].re;																		//Get the sum off complete offset
+		writeF_UART(DSP_Array[i]);																						//Debug print spectrum
 	}
-	
-	Offset /= N;																						//Find average DC offset
-
-	return Offset;																						//Return ADC DC offset
-}
-
-
-
-float Cal_I_OFFSET(complexfloat *FFT_Array)
-{
-	float Offset = 0;																					//Temporary variable for storing Offset
-	
-	for(uint16_t i = 0; i < N; i++)
-	{
-		Offset += FFT_Array[i].im;																		//Get the sum off complete offset
-	}
-	
-	Offset /= N;																						//Find average DC offset
-
-	return Offset;																						//Return ADC DC offset
 }
 

@@ -19,21 +19,18 @@ uint16_t calc_BitReversal(uint16_t Value)
 
 
 
-uint16_t *init_BRLookup(void)
+void init_BRLookup(uint16_t *Lookup_Reverse)
 {
-	uint16_t *Lookup_Reverse = malloc(sizeof(uint16_t)*N);														//Allocates memory for lookup array size(2*N)bytes
-
 	for(uint16_t i = 0; i < N; i++)
 	{
 		Lookup_Reverse[i] = calc_BitReversal(i);																//Calculates the bit reversal for the fft input order
 	}
-
-	return Lookup_Reverse;
 }
 
-complexfloat *init_avr_Wlookup(void)
+
+
+void init_avr_Wlookup(complexfloat *W)
 {
-	complexfloat *W = malloc(sizeof(complexfloat)*(N/2));														//Allocate heap memory for the twiddle factors
 	complexfloat TempW;                                                                                         //Create temporary variable
 	TempW.re = 1, TempW.im = 0;                                                                                 //Set to value W^0
 	complexfloat Wk = cf_exp((-2*M_PI)/N);																		//Value Wn^1
@@ -45,16 +42,6 @@ complexfloat *init_avr_Wlookup(void)
 
 		TempW = cf_multiply(TempW, Wk);																			//Update temporary variable (W^(i+1))
 	}
-
-	return W;                                                                                                   //Return pointer to the complex struct containing twiddle factors
-}
-
-
-
-complexfloat *init_avr_fft(void)
-{
-	complexfloat *FFT_Array = malloc(sizeof(complexfloat)*N);													//Allocate heap memory 4*N bytes
-	return FFT_Array;                                                                                           //Returns pointer to allocated memory
 }
 
 
@@ -97,13 +84,10 @@ void calc_avr_FFT(complexfloat* FFT_Array, complexfloat* W)
 	}
 }
 
-float *init_Window(void)
+void init_Window(float *Window)
 {
-	float *Window = malloc(sizeof(float)*(N/2));																//Allocate memory for the window function
 	for(uint16_t i = 0; i < (N/2); i++)
 	{
 		Window[i] = A0 - (A1*cosf((2*M_PI*i)/N)) + (A2*cosf((4*M_PI*i)/N)) - (A3*cosf((6*M_PI*i)/N));			//Generates 0.5Blackman-Harris window weights
 	}
-
-	return Window;
 }

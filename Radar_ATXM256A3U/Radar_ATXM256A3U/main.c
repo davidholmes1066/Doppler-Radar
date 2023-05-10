@@ -9,18 +9,19 @@
 
 
 
-complexfloat *FFT_Array;														//Global pointer to FFT_Array memory block
-complexfloat *W;																//Global pointer to twiddle factor lookup memory block
-uint16_t *Reverse_Lookup;														//Global pointer to Bit reversal lookup memory block
-float *Window;																	//Global pointer to Window lookup memory block
+complexfloat FFT_Array[N];														//Global pointer to FFT_Array memory block
+complexfloat W[(N/2)];															//Global pointer to twiddle factor lookup memory block
+uint16_t Reverse_Lookup[N];														//Global pointer to Bit reversal lookup memory block
+float Window[N/2];																//Global pointer to Window lookup memory block
+float DSP_Array[N];																//Array for doing some DSP things
+
 uint16_t count = 0;																//keeps track of samples taken
 
 uint8_t ReadyFInstruction = 1;													//If true ATXmega is ready to receive instruction, if not its busy taking measurements
 uint8_t Instruction = 0;														//Variable for storing instructions read from UART
-uint8_t CalState = 0;															//Calibration state 1 = true
 
-float R_Offset = 3500;															//Real channel ADC offset
-float I_Offset = 3500;															//Imag channel ADC offset
+float R_Offset = 3495;															//Real channel ADC offset
+float I_Offset = 3495;															//Imag channel ADC offset
 
 
 
@@ -44,10 +45,9 @@ int main(void)
 	sei();																		//Global interrupt mask
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;												//Set low level interrupts
 	
-	FFT_Array = init_avr_fft();													//Creates data block in heap for FFT in place computation
-	W = init_avr_Wlookup();														//Creates heap lookup table for twiddle factors
-	Reverse_Lookup = init_BRLookup();											//Creates heap lookup table for bit reverse order (decimation order)
-	Window = init_Window();														//Creates heap lookup table for the Window function
+	init_avr_Wlookup(W);														//Creates heap lookup table for twiddle factors
+	init_BRLookup(Reverse_Lookup);												//Creates heap lookup table for bit reverse order (decimation order)
+	init_Window(Window);														//Creates heap lookup table for the Window function
 	
 	
 	
@@ -60,10 +60,9 @@ int main(void)
 			
 			switch (Instruction)
 			{
-				case 1:															//Calibration
+				case 1:															//Used to calibration command now doubles speed
 					ReadyFInstruction = 0;										//Set status to busy
 					Instruction = 0;											//Reset instruction
-					CalState = 1;												//Set device to cal state
 					start_timer();												//Start taking samples
 					break;
 				
@@ -83,27 +82,15 @@ int main(void)
 		
 		if(count == N)															//When the FFT array is full of samples perform calculations
 		{
-			
-			if(CalState == 1)													//Is calibration state active?
-			{
-				stop_timer();													//Stop sampling
-				R_Offset = Cal_R_OFFSET(FFT_Array);								//Find average offset real channel
-				I_Offset = Cal_I_OFFSET(FFT_Array);								//Find average offset imag channel
-				CalState = 0;													//Clear Cal state
-				writeF_UART(0.12345);											//Write checksum to MATLAB
-			}
-
-			else
-			{
 				stop_timer();													//Stop sampling
 				apply_avr_Window(FFT_Array, Window, Reverse_Lookup);			//Apply Blackman-Harris window
 				calc_avr_FFT(FFT_Array, W);										//Calculates Radix2-FFT in pace
-				DebugPrint_spectrum(FFT_Array, N);								//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
+				Compute_ABS_spectrum(FFT_Array, DSP_Array);						//Calculates and prints spectrum
+//				DebugPrint_spectrum(FFT_Array, N);								//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
 		
 				count = 0;														//Reset count
 				ReadyFInstruction = 1;											//Get ready for new instruction
 				writeF_UART(0.12345);											//Write checksum to MATLAB
-			}
 		}
 	}
 }

@@ -2,13 +2,16 @@ clearvars;
 close all;
 
 N = 512;
+fb = (-N/2):1:((N/2)-1);
 COM = 'COM12';
 
 xmega = serialport(COM,115200,'Timeout',10);
 flush(xmega);
 
-write(xmega, 1, "uint8");                                                       %Write cal state
-checksum = read(xmega, 1, "single");                                            %Get checksum from device
+i = 1;
+
+%write(xmega, 1, "uint8");                                                       %Write cal state
+%checksum = read(xmega, 1, "single");                                            %Get checksum from device
 
 while 1
     
@@ -20,7 +23,9 @@ while 1
 
     spectrum = read(xmega, N, "single");                                        %Read spectrum
     checksum = read(xmega, 1, "single");                                        %Read checksum
-    stem(spectrum);                                                             %Plot spectrum
-    ylim([0, 1E+5])
+    stem(fb, spectrum);                                                             %Plot spectrum
+    %writematrix(spectrum,'test.csv','WriteMode','append');
+    i = i + 1;
+    %ylim([0, 1E+5])
     drawnow
 end

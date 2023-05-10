@@ -8,7 +8,5 @@
 
 
 void DebugPrint_spectrum(complexfloat* FFT_Array, uint16_t FBins);					//Calculates magnitude frequency components and debug prints floats
-float Cal_R_OFFSET(complexfloat *FFT_Array);										//Calculate average ADC offset real channel
-float Cal_I_OFFSET(complexfloat *FFT_Array);										//Calculate average ADC offset imag channel
-
+void Compute_ABS_spectrum(complexfloat *FFT_Array, float *DSP_Array);
 #endif /* DSP_H_ */
