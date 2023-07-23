@@ -34,9 +34,11 @@ void Compute_ABS_spectrum(complexfloat *FFT_Array, float *DSP_Array)
 // 	}
 }
 
-int16_t Get_peak(float *DSP_Array)
+float Get_speed(float *DSP_Array)
 {
-	int16_t Array_Index = 0;
+	int16_t Array_Index = 0;																							//Frequency bin
+	float fd;																											//Doppler shift frequency
+	float n_speed;																										//Normalized speed in kph
 	
 	for(uint16_t i = 1; i < N; i++)
 	{
@@ -48,12 +50,14 @@ int16_t Get_peak(float *DSP_Array)
 	
 	if(DSP_Array[Array_Index] < MIN_AMP)
 	{
-		return (N/2);																										//Peak is lower than the specified minimum peak value
+		Array_Index = (N/2);																							//Peak is lower than the specified minimum peak value and sets peak index to default zero
 	}
 	
-	else
-	{
-		return Array_Index;																								//Returns bin count for peak
-	}
+	Array_Index -= (N/2);																								//creates +- frequency bin index from true 0 Hz
+	fd = Array_Index * F_BIN;																							//Calculates the Doppler shift based on highest frequency bin peak
+	
+	n_speed = (((((C*fd)/F0)-C)/(((fd/F0)+1)*cosf(A_rad))*3.6)*F_CAL);													//Calculates boat speed in kph
+	
+	return n_speed;
 }
 

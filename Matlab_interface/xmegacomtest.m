@@ -22,10 +22,10 @@ while 1
     end
 
     %spectrum = read(xmega, N, "single");                                        %Read spectrum
-    bin(i) = read(xmega, 1, "single");
+    speed(i) = read(xmega, 1, "single");
     checksum = read(xmega, 1, "single");                                        %Read checksum
     
-    stem(bin);
+    stem(speed);
     %stem(fb, spectrum);                                                             %Plot spectrum
     %writematrix(spectrum,'test.csv','WriteMode','append');
     i = i + 1;
