@@ -48,6 +48,7 @@ int main(void)
 	init_avr_Wlookup(W);														//Creates heap lookup table for twiddle factors
 	init_BRLookup(Reverse_Lookup);												//Creates heap lookup table for bit reverse order (decimation order)
 	init_Window(Window);														//Creates heap lookup table for the Window function
+	float peak;
 	
 	
 	
@@ -86,6 +87,11 @@ int main(void)
 				apply_avr_Window(FFT_Array, Window, Reverse_Lookup);			//Apply Blackman-Harris window
 				calc_avr_FFT(FFT_Array, W);										//Calculates Radix2-FFT in pace
 				Compute_ABS_spectrum(FFT_Array, DSP_Array);						//Calculates and prints spectrum
+				
+				peak = ((float)Get_peak(DSP_Array))-(N/2);						//Get peak location
+				writeF_UART(peak);
+				
+				
 //				DebugPrint_spectrum(FFT_Array, N);								//Calculate vector magnitudes and send floats through UART --> USB2.0 in 8bit sections
 		
 				count = 0;														//Reset count

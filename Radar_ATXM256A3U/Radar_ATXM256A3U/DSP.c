@@ -28,9 +28,32 @@ void Compute_ABS_spectrum(complexfloat *FFT_Array, float *DSP_Array)
 		DSP_Array[i+MinSample] = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate positive frequency vector length 
 	}
 
-	for(uint16_t i = 0; i < N; i++)
+// 	for(uint16_t i = 0; i < N; i++)
+// 	{
+// 		writeF_UART(DSP_Array[i]);																						//Debug print spectrum
+// 	}
+}
+
+int16_t Get_peak(float *DSP_Array)
+{
+	int16_t Array_Index = 0;
+	
+	for(uint16_t i = 1; i < N; i++)
 	{
-		writeF_UART(DSP_Array[i]);																						//Debug print spectrum
+		if(DSP_Array[i] > DSP_Array[Array_Index])																		//Find highest peak by comparison
+		{
+			Array_Index = i;																							//store highest peak in array index																					
+		}
+	}
+	
+	if(DSP_Array[Array_Index] < MIN_AMP)
+	{
+		return (N/2);																										//Peak is lower than the specified minimum peak value
+	}
+	
+	else
+	{
+		return Array_Index;																								//Returns bin count for peak
 	}
 }
 

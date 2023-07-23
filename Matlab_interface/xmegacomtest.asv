@@ -17,7 +17,7 @@ while 1
     
     write(xmega, 2, "uint8");                                                    %Send start sign
     
-    while xmega.NumBytesAvailable < (2*4)
+    while xmega.NumBytesAvailable < (N*4)
         %Do nothing 
     end
 
