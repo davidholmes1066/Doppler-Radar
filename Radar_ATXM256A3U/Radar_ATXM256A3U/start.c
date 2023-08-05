@@ -69,9 +69,9 @@ void init_ADC(void)
 
 void init_DAC(void)
 {
-	DACB.CTRLC = DAC_REFSEL_INT1V_gc;									//set DAC reference to internal 1V
+	DACB.CTRLC = DAC_REFSEL_AVCC_gc;									//set DAC reference to internal 1V
 	DACB.CTRLB = DAC_CHSEL_SINGLE_gc;									//set DAC output to channel 0
-	DACB.CTRLA = DAC_CH0EN_bm | DAC_ENABLE_bm;							//Enable both DAC channels
+	//DACB.CTRLA = DAC_CH0EN_bm | DAC_ENABLE_bm;							//Enable both DAC channels
 	// PIN: PB2 = DACCH0
 	// Write: to register DACB.CH0DATA
 }

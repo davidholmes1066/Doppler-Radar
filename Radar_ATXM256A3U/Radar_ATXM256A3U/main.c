@@ -62,12 +62,16 @@ int main(void)
 			switch (Instruction)
 			{
 				case 1:															//Used to calibration command now doubles speed
+					enable_radar();												//Gets radar ready to use (!module has startup time)
+					not_correct_delay();										//add slight delay
 					ReadyFInstruction = 0;										//Set status to busy
 					Instruction = 0;											//Reset instruction
 					start_timer();												//Start taking samples
 					break;
 				
 				case 2:															//Find speed
+					enable_radar();												//Gets radar ready to use (!module has startup time)
+					not_correct_delay();										//add slight delay
 					ReadyFInstruction = 0;										//Set status to busy
 					Instruction = 0;											//Reset instruction
 					start_timer();												//start taking samples
@@ -89,6 +93,7 @@ int main(void)
 				Compute_ABS_spectrum(FFT_Array, DSP_Array);						//Calculates and prints spectrum
 				speed = Get_speed(DSP_Array);									//Finds peak, calculates Doppler shift and returns speed							
 				writeF_UART(speed);												//Write speed to MATLAB in kph
+				disable_radar();												//Save some power by disabling radar module and DAC
 		
 				count = 0;														//Reset count
 				ReadyFInstruction = 1;											//Get ready for new instruction

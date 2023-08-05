@@ -12,6 +12,8 @@ uint8_t read8_UART(void);																						//Reads 8 bit command from UART
 void writeF_UART(float data);																					//Writes a float through UART
 void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i, float R_Offset, float I_Offset);	//Reads ADC and decimates in time
 void not_correct_delay(void);																					//Debug
+void disable_radar(void);																						//disable radar and DAC
+void enable_radar(void);																						//enables radar and DAC
 
 
 
