@@ -108,7 +108,7 @@ void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i, flo
 void not_correct_delay(void)
 {
 	uint32_t i = 0;
-	while(i < 3200000)
+	while(i < 500000)
 	{
 		i++;
 	}
@@ -124,8 +124,9 @@ void enable_radar(void)
 {
 	uint16_t rand_frequency;																		//Variable for storing random center frequency
 	PORTA_OUTCLR = PIN1_bm;																			//Enable radar module
-	DACB.CTRLA |= (0x05);																			//Enables channel 0 DAC and enables low power mode
+	DACB.CTRLA |= (0x05);																			//Enables channel 0 DAC
 	
+	not_correct_delay();																			//Give time for radar oscillator to settle
 	
 	rand_frequency = rand();																		//Get random number 16bit number
 	DACB.CH0DATA = rand_frequency;																	//Set DAC output value to the random number

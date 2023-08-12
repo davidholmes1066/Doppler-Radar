@@ -87,13 +87,13 @@ int main(void)
 		
 		if(count == N)															//When the FFT array is full of samples perform calculations
 		{
-				stop_timer();													//Stop sampling
+				stop_timer();
+				disable_radar();												//Save some power by disabling radar module and DAC													//Stop sampling
 				apply_avr_Window(FFT_Array, Window, Reverse_Lookup);			//Apply Blackman-Harris window
 				calc_avr_FFT(FFT_Array, W);										//Calculates Radix2-FFT in pace
 				Compute_ABS_spectrum(FFT_Array, DSP_Array);						//Calculates and prints spectrum
 				speed = Get_speed(DSP_Array);									//Finds peak, calculates Doppler shift and returns speed							
 				writeF_UART(speed);												//Write speed to MATLAB in kph
-				disable_radar();												//Save some power by disabling radar module and DAC
 		
 				count = 0;														//Reset count
 				ReadyFInstruction = 1;											//Get ready for new instruction

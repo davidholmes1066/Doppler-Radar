@@ -28,10 +28,10 @@ void Compute_ABS_spectrum(complexfloat *FFT_Array, float *DSP_Array)
 		DSP_Array[i+MinSample] = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate positive frequency vector length 
 	}
 
-// 	for(uint16_t i = 0; i < N; i++)
-// 	{
-// 		writeF_UART(DSP_Array[i]);																						//Debug print spectrum
-// 	}
+ 	for(uint16_t i = 0; i < N; i++)
+ 	{
+ 		writeF_UART(DSP_Array[i]);																						//Debug print spectrum
+ 	}
 }
 
 float Get_speed(float *DSP_Array)
@@ -53,6 +53,8 @@ float Get_speed(float *DSP_Array)
 	{
 		Array_Index = (N/2);																							//Peak is lower than the specified minimum peak value and sets peak index to default zero
 	}
+	
+	writeF_UART(DSP_Array[Array_Index]);																				//Debug print magnitude of peak
 	
 	Array_Index -= (N/2);																								//creates +- frequency bin index from true 0 Hz
 	fd = ((float)Array_Index * (float)F_BIN);																			//Calculates the Doppler shift based on highest frequency bin peak
