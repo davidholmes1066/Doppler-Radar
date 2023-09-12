@@ -6,10 +6,10 @@
 
 #include <math.h>
 
-#define MIN_AMP 2500																//Minimum peak amplitude, lower values will be seen as noise
+#define MIN_AMP 750																	//Minimum peak amplitude, lower values will be seen as noise
 #define C 299705000.0																//Speed of light trough air
 #define F0 24125000000.0															//Radar module center frequency
-#define A_deg 0																		//Radar angle in deg (relative to water surface)
+#define A_deg 30																	//Radar angle in deg (relative to water surface)
 #define F_SAMPLE 5000.0																//sample rate in HZ
 #define F_CAL 1																		//Calibration factor speed
 

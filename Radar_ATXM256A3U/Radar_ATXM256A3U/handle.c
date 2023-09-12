@@ -108,7 +108,7 @@ void read_ADC(complexfloat *FFT_Array, uint16_t *Lookup_Reverse, uint16_t i, flo
 void not_correct_delay(void)
 {
 	uint32_t i = 0;
-	while(i < 500000)
+	while(i < 3000000)
 	{
 		i++;
 	}

@@ -28,7 +28,12 @@ void Compute_ABS_spectrum(complexfloat *FFT_Array, float *DSP_Array)
 		DSP_Array[i+MinSample] = sqrtf((FFT_Array[i].im * FFT_Array[i].im) + (FFT_Array[i].re * FFT_Array[i].re));		//Calculate positive frequency vector length 
 	}
 
- 	for(uint16_t i = 0; i < N; i++)
+ 	for(uint16_t i = ((N/2)-4); i < ((N/2)+5); i++)
+	{
+		DSP_Array[i] = 0;																								//Get rid of -4 to 4 frequency bins for clean spectrum
+	}
+	 
+	for(uint16_t i = 0; i < N; i++)
  	{
  		writeF_UART(DSP_Array[i]);																						//Debug print spectrum
  	}
@@ -41,7 +46,7 @@ float Get_speed(float *DSP_Array)
 	float n_speed;																										//Normalized speed in kph																									//Temp storage
 	float raw_speed;
 	
-	for(uint16_t i = 1; i < N; i++)
+	for(uint16_t i = 1; i < (N); i++)
 	{
 		if(DSP_Array[i] > DSP_Array[Array_Index])																		//Find highest peak by comparison
 		{

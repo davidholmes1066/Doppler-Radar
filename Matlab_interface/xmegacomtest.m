@@ -7,6 +7,8 @@ F0 = 24.125E+9;
 fb = (-N/2):1:((N/2)-1);
 COM = 'COM9';
 
+tiledlayout(2,3);
+
 xmega = serialport(COM,115200,'Timeout',10);
 flush(xmega);
 
@@ -30,16 +32,29 @@ while 1
 
 
     %Function for reading spectrum
-    while xmega.NumBytesAvailable < ((N*4)+(3*4))                                   %Do nothing till data is ready
+    while xmega.NumBytesAvailable < ((N*4)+(3*4)+(N*2*4))                                   %Do nothing till data is ready
     end
     
+    samples = read(xmega, N*2, "single");
     spectrum = read(xmega, N, "single");                                        %Read data
     mag = read(xmega, 1, "single");
     speed(i) = read(xmega, 1, "single");
     checksum = read(xmega,1,"single");
     
-    
-    Vp(i) = (2*mag*2.06)./(N*pi*4096);%Read spectrum
+    j = 1;
+    for h = 1:2:(N*2)
+        isamples(j) = samples(h);
+        j = j+1;
+    end
+
+
+    j = 1;
+    for h = 2:2:(N*2)
+        qsamples(j) = samples(h);
+        j = j + 1;
+    end
+
+    Vp(i) = (2*mag*2.06)./(N*pi*4096*0.364);%Read spectrum
     
     if(i == 1)
         nexttile;
@@ -53,7 +68,7 @@ while 1
         grid on;
         ylabel('Peak voltage in V');
         xlabel('FFT sample number');
-        title('Vp no added gain');
+        title('Main frequency peak value');
 
         nexttile;
         sp = plot(speed);
@@ -61,11 +76,29 @@ while 1
         ylabel('Speed in kph');
         xlabel('FFT sample number');
         title('Boat speed');
+
+        drawnow;
+
+        nexttile;
+        is = plot(isamples);
+        grid on;
+        ylabel('ADC value');
+        xlabel('sample Nr');
+        title('Raw I samples');
+
+        nexttile;
+        qs = plot(qsamples);
+        grid on;
+        ylabel('ADC value');
+        xlabel('sample Nr');
+        title('Raw Q samples');
     end
 
     v.YData = Vp;                                                           %Update plot data
     s.YData = spectrum;
     sp.YData = speed;
+    is.YData = isamples;
+    qs.YData = qsamples;
 
 %    writematrix(spectrum,'test.csv','WriteMode','append');
 

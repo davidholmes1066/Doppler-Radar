@@ -7,6 +7,9 @@
 #include "handle.h"
 #include "DSP.h"
 
+#define R_Offset 2195															//Real channel ADC offset
+#define I_Offset 2195															//Imag channel ADC offset
+
 
 
 complexfloat FFT_Array[N];														//Global pointer to FFT_Array memory block
@@ -19,9 +22,6 @@ uint16_t count = 0;																//keeps track of samples taken
 
 uint8_t ReadyFInstruction = 1;													//If true ATXmega is ready to receive instruction, if not its busy taking measurements
 uint8_t Instruction = 0;														//Variable for storing instructions read from UART
-
-float R_Offset = 3495;															//Real channel ADC offset
-float I_Offset = 3495;															//Imag channel ADC offset
 
 
 

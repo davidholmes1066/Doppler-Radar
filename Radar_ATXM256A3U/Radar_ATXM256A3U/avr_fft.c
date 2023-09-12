@@ -1,4 +1,5 @@
 #include "avr_fft.h"
+#include "handle.h"
 
 uint16_t calc_BitReversal(uint16_t Value)
 {
@@ -48,6 +49,12 @@ void init_avr_Wlookup(complexfloat *W)
 
 void apply_avr_Window(complexfloat *FFT_Array, float *Window, uint16_t *Lookup_Reverse)
 {
+	for(uint16_t i= 0; i < N; i++)
+	{
+		writeF_UART(FFT_Array[Lookup_Reverse[i]].re);															//Debug print sample
+		writeF_UART(FFT_Array[Lookup_Reverse[i]].im);
+	}
+	
 	for(uint16_t i = 0; i < (N/2); i++)
 	{
 		FFT_Array[Lookup_Reverse[i]] = cf_multiply_rf(FFT_Array[Lookup_Reverse[i]], Window[i]);					//Apply window to first half of samples
