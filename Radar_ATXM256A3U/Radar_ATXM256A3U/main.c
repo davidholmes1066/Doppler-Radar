@@ -7,8 +7,8 @@
 #include "handle.h"
 #include "DSP.h"
 
-#define R_Offset 2195															//Real channel ADC offset
-#define I_Offset 2195															//Imag channel ADC offset
+#define R_Offset 0																//Real channel ADC offset
+#define I_Offset 0																//Imag channel ADC offset
 
 
 
@@ -88,7 +88,7 @@ int main(void)
 		if(count == N)															//When the FFT array is full of samples perform calculations
 		{
 				stop_timer();
-				disable_radar();												//Save some power by disabling radar module and DAC													//Stop sampling
+				//disable_radar();												//Save some power by disabling radar module and DAC													//Stop sampling
 				apply_avr_Window(FFT_Array, Window, Reverse_Lookup);			//Apply Blackman-Harris window
 				calc_avr_FFT(FFT_Array, W);										//Calculates Radix2-FFT in pace
 				Compute_ABS_spectrum(FFT_Array, DSP_Array);						//Calculates and prints spectrum

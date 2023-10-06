@@ -4,6 +4,12 @@
 
   (paper "A4")
 
+  (title_block
+    (title "Doppler Debug Board (Digital)")
+    (date "2023-09-18")
+    (rev "AB")
+  )
+
   (lib_symbols
     (symbol "Connector:AVR-PDI-6" (pin_names (offset 1.016)) (in_bom yes) (on_board yes)
       (property "Reference" "J" (at -6.35 8.89 0)

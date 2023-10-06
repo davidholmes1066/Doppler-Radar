@@ -5,9 +5,9 @@
   (paper "A4")
 
   (title_block
-    (title "Doppler Radar Controll Board")
-    (date "2023-01-25")
-    (rev "AA")
+    (title "Doppler Debug Board")
+    (date "2023-09-18")
+    (rev "AB")
     (company "CleanMobility")
   )
 
